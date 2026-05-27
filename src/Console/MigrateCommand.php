@@ -9,7 +9,7 @@ use Hibla\Migrations\Console\Traits\LoadsSchemaConfiguration;
 use Hibla\Migrations\Console\Traits\ValidateConnection;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
-use Hibla\QueryBuilder\Interfaces\DatabaseTransactionInterface;
+use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
 use Hibla\Migrations\Schema\DatabaseManager;
 use Hibla\Migrations\Schema\Migration;
 use Hibla\Migrations\Schema\MigrationRepository;
@@ -713,7 +713,7 @@ class MigrateCommand extends Command
         $migration->up();
     }
 
-    private function logMigration(string $relativePath, int $batchNumber, ?string $migrationConnection, ?DatabaseTransactionInterface $tx = null): void
+    private function logMigration(string $relativePath, int $batchNumber, ?string $migrationConnection, ?TransactionalQueryBuilderInterface $tx = null): void
     {
         $repository = $this->getRepository($migrationConnection);
         await($repository->log($relativePath, $batchNumber, $tx));

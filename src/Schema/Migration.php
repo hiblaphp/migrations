@@ -6,8 +6,8 @@ namespace Hibla\Migrations\Schema;
 
 use Hibla\Promise\Interfaces\PromiseInterface;
 use Hibla\QueryBuilder\DB;
-use Hibla\QueryBuilder\Interfaces\DatabaseTransactionInterface;
-use Hibla\QueryBuilder\Interfaces\QueryBuilderInterface;
+use Hibla\QueryBuilder\Interfaces\BaseQueryBuilderInterface;
+use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
 
 /**
  * Base migration class that provides helper methods and configuration for migrations.
@@ -26,9 +26,9 @@ abstract class Migration
     protected bool $withinTransaction = true;
 
     /**
-     * The active database transaction instance, if running within one.
+     * The active database transaction builder instance, if running within one.
      */
-    protected ?DatabaseTransactionInterface $transaction = null;
+    protected ?TransactionalQueryBuilderInterface $transaction = null;
 
     /**
      * The schema builder instance.
@@ -82,9 +82,9 @@ abstract class Migration
     }
 
     /**
-     * Set the active transaction for this migration.
+     * Set the active transaction builder for this migration.
      */
-    public function setTransaction(?DatabaseTransactionInterface $transaction): self
+    public function setTransaction(?TransactionalQueryBuilderInterface $transaction): self
     {
         $this->transaction = $transaction;
 
@@ -247,12 +247,13 @@ abstract class Migration
     /**
      * Get a query builder for a table.
      *
-     * @return QueryBuilderInterface
+     * @return BaseQueryBuilderInterface
      */
-    protected function db(string $table): QueryBuilderInterface
+    protected function db(string $table): BaseQueryBuilderInterface
     {
         if ($this->transaction !== null) {
-            return $this->transaction->table($table);
+            // ->from() returns a cloned builder, safely isolating AST modifications
+            return $this->transaction->from($table);
         }
 
         return DB::connection($this->connection)->table($table);

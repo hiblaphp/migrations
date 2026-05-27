@@ -7,8 +7,8 @@ namespace Hibla\Migrations\Schema;
 use Hibla\Promise\Interfaces\PromiseInterface;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Interfaces\DatabaseConnectionInterface;
-use Hibla\QueryBuilder\Interfaces\DatabaseTransactionInterface;
 use Hibla\QueryBuilder\Interfaces\RawQueryInterface;
+use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
 
 use function Hibla\async;
 use function Hibla\await;
@@ -21,7 +21,7 @@ class SchemaBuilder
 
     private ?string $connection = null;
 
-    private ?DatabaseTransactionInterface $transaction = null;
+    private ?TransactionalQueryBuilderInterface $transaction = null;
 
     public function __construct(?string $driver = null, ?string $connection = null)
     {
@@ -32,7 +32,7 @@ class SchemaBuilder
     /**
      * Set the active database transaction for the schema operations.
      */
-    public function setTransaction(?DatabaseTransactionInterface $transaction): void
+    public function setTransaction(?TransactionalQueryBuilderInterface $transaction): void
     {
         $this->transaction = $transaction;
     }

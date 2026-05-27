@@ -7,7 +7,7 @@ namespace Hibla\Migrations\Schema;
 use Hibla\Promise\Interfaces\PromiseInterface;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Interfaces\DatabaseConnectionInterface;
-use Hibla\QueryBuilder\Interfaces\DatabaseTransactionInterface;
+use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
 
 class MigrationRepository
 {
@@ -152,11 +152,11 @@ class MigrationRepository
      *
      * @param string $file The migration file name.
      * @param int $batch The batch number.
-     * @param DatabaseTransactionInterface|null $tx The active transaction, if any.
+     * @param TransactionalQueryBuilderInterface|null $tx The active transaction builder, if any.
      *
      * @return PromiseInterface<int> Resolves with the number of affected rows.
      */
-    public function log(string $file, int $batch, ?DatabaseTransactionInterface $tx = null): PromiseInterface
+    public function log(string $file, int $batch, ?TransactionalQueryBuilderInterface $tx = null): PromiseInterface
     {
         $table = $this->quoteIdentifier($this->table);
         $client = $tx ?? $this->getConnection();
@@ -171,11 +171,11 @@ class MigrationRepository
      * Remove a migration from the log.
      *
      * @param string $migration The migration file name.
-     * @param DatabaseTransactionInterface|null $tx The active transaction, if any.
+     * @param TransactionalQueryBuilderInterface|null $tx The active transaction builder, if any.
      *
      * @return PromiseInterface<int> Resolves with the number of affected rows.
      */
-    public function delete(string $migration, ?DatabaseTransactionInterface $tx = null): PromiseInterface
+    public function delete(string $migration, ?TransactionalQueryBuilderInterface $tx = null): PromiseInterface
     {
         $table = $this->quoteIdentifier($this->table);
         $client = $tx ?? $this->getConnection();
