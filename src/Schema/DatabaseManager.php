@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Schema;
 
+use Hibla\Migrations\Exceptions\SchemaMigrationException;
 use Hibla\Promise\Interfaces\PromiseInterface;
-use Hibla\QueryBuilder\DatabaseConnection;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\QueryBuilder\Exceptions\InvalidConnectionConfigException;
-use Hibla\Migrations\Exceptions\SchemaMigrationException;
+use Hibla\QueryBuilder\Internals\DatabaseConnection;
 use Rcalicdan\ConfigLoader\Config;
 
 use function Hibla\async;

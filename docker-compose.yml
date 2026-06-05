@@ -17,7 +17,13 @@ services:
       retries: 3
 
   postgres:
-    image: postgres:15
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM postgis/postgis:15-3.3
+        RUN apt-get update && apt-get install -y --no-install-recommends \
+            postgresql-15-pgvector \
+            && rm -rf /var/lib/apt/lists/*
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
@@ -31,6 +37,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-
-volumes:
-  mssql_data:

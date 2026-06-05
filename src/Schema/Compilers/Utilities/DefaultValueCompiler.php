@@ -11,11 +11,11 @@ use Hibla\Migrations\Exceptions\SchemaCompilerException;
  */
 class DefaultValueCompiler
 {
-     /**
-     * A list of database expressions that should not be quoted.
-     *
+    /**
+    * A list of database expressions that should not be quoted.
+    *
      * @var list<string>
-     */
+    */
     protected array $expressionList = [];
 
     public function compile(mixed $default): string

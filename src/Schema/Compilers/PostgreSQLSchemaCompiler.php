@@ -45,17 +45,17 @@ class PostgreSQLSchemaCompiler implements SchemaCompiler
 
         $columnDefinitions = [];
         foreach ($columns as $column) {
-            $columnDefinitions[] = '  '.$this->compileColumn($column);
+            $columnDefinitions[] = '  ' . $this->compileColumn($column);
         }
 
         foreach ($indexDefinitions as $indexDef) {
             if (\in_array($indexDef->getType(), ['PRIMARY', 'UNIQUE'], true)) {
-                $columnDefinitions[] = '  '.$this->indexCompiler->compileIndexDefinition($indexDef);
+                $columnDefinitions[] = '  ' . $this->indexCompiler->compileIndexDefinition($indexDef);
             }
         }
 
         foreach ($foreignKeys as $foreignKey) {
-            $columnDefinitions[] = '  '.$this->foreignKeyCompiler->compile($foreignKey);
+            $columnDefinitions[] = '  ' . $this->foreignKeyCompiler->compile($foreignKey);
         }
 
         $sql .= implode(",\n", $columnDefinitions);
@@ -79,7 +79,7 @@ class PostgreSQLSchemaCompiler implements SchemaCompiler
         }
 
         if ($column->hasDefault()) {
-            $sql .= ' DEFAULT '.$this->defaultCompiler->compile($column->getDefault(), $column);
+            $sql .= ' DEFAULT ' . $this->defaultCompiler->compile($column->getDefault(), $column);
         } elseif ($column->shouldUseCurrent()) {
             $sql .= ' DEFAULT CURRENT_TIMESTAMP';
         }
@@ -228,7 +228,7 @@ class PostgreSQLSchemaCompiler implements SchemaCompiler
     {
         $statements = [];
         foreach ($foreignKeys as $foreignKey) {
-            $statements[] = "ALTER TABLE \"{$table}\" ADD ".$this->foreignKeyCompiler->compile($foreignKey, $this->useNotValidConstraints);
+            $statements[] = "ALTER TABLE \"{$table}\" ADD " . $this->foreignKeyCompiler->compile($foreignKey, $this->useNotValidConstraints);
 
             if ($this->useNotValidConstraints) {
                 $statements[] = $this->compileValidateConstraint($table, $foreignKey->getName());
@@ -272,11 +272,9 @@ class PostgreSQLSchemaCompiler implements SchemaCompiler
 
     public function compileTableExists(string $table): string
     {
-        return "SELECT EXISTS (
-            SELECT FROM pg_tables 
-            WHERE schemaname = 'public' 
-            AND tablename = '{$table}'
-        )";
+        return "SELECT COUNT(*) FROM pg_tables 
+                WHERE schemaname = 'public' 
+                AND tablename = '{$table}'";
     }
 
     public function compileRename(string $from, string $to): string
@@ -292,7 +290,7 @@ class PostgreSQLSchemaCompiler implements SchemaCompiler
             $drops[] = "DROP COLUMN IF EXISTS \"{$col}\"";
         }
 
-        return "ALTER TABLE \"{$table}\" ".implode(', ', $drops);
+        return "ALTER TABLE \"{$table}\" " . implode(', ', $drops);
     }
 
     public function compileRenameColumn(Blueprint $blueprint, string $from, string $to): string

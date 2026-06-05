@@ -38,4 +38,13 @@ describe('IndexDefinition Class', function () {
         expect($array['columns'])->toBe(['email']);
         expect($array['algorithm'])->toBe('BTREE');
     });
+
+    it('sets index with and using clauses', function () {
+        $index = new IndexDefinition('INDEX', ['data'], 'idx_data');
+        $index->with('fillfactor = 80')->using(['op' => 'value']);
+
+        expect($index->getWith())->toBe('fillfactor = 80')
+            ->and($index->getUsing())->toBe(['op' => 'value'])
+        ;
+    });
 });

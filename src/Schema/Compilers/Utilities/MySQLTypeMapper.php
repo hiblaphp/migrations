@@ -45,7 +45,7 @@ class MySQLTypeMapper extends ColumnTypeMapper
         }
 
         return match (true) {
-            $type === 'ENUM' => 'ENUM',
+            $type === 'ENUM' => "ENUM('" . implode("', '", $column->getEnumValues()) . "')",
             \in_array($type, ['DECIMAL', 'FLOAT', 'DOUBLE'], true) => $this->formatPrecisionScale($type, $column),
             $column->getLength() !== null => $this->formatLength($type, $column),
             default => $this->typeMap[$type] ?? $type,

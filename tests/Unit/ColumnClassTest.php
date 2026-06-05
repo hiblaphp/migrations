@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Carbon\Carbon;
 use Hibla\Migrations\Schema\Column;
 
 describe('Column Class', function () {
@@ -111,5 +112,35 @@ describe('Column Class', function () {
         expect($newColumn->getLength())->toBe(255);
         expect($newColumn->isNullable())->toBeTruthy();
         expect($newColumn->getDefault())->toBe('test');
+    });
+
+    it('copies column with modifications', function () {
+        $column = new Column('count', 'INT');
+        $column->unsigned();
+
+        $newColumn = $column->copyWithModifications([
+            'type' => 'BIGINT',
+            'nullable' => true,
+            'default' => 10,
+        ]);
+
+        expect($newColumn->getName())->toBe('count')
+            ->and($newColumn->getType())->toBe('BIGINT')
+            ->and($newColumn->isNullable())->toBeTrue()
+            ->and($newColumn->getDefault())->toBe(10)
+            ->and($newColumn->isUnsigned())->toBeTrue()
+        ;
+    });
+
+    it('converts Carbon default values according to column timezone', function () {
+        $column = new Column('created_at', 'TIMESTAMP');
+        $column->timezone('America/New_York');
+
+        $now = Carbon::create(2026, 6, 5, 12, 0, 0, 'UTC');
+        $column->default($now);
+
+        expect($column->getTimezone())->toBe('America/New_York')
+            ->and($column->getDefault())->toBe('2026-06-05 08:00:00')
+        ;
     });
 });

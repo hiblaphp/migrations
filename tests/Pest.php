@@ -26,7 +26,7 @@ function cleanupSchema(): void
 {
     try {
         SchemaTestHelper::cleanupTables(schema());
-    } catch (\Throwable $e) {
+    } catch (Throwable $e) {
         // Ignore errors during cleanup
     }
 

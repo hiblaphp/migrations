@@ -137,7 +137,7 @@ class SchemaBuilder
             $compiler = $this->getCompiler();
             $sql = $compiler->compileTableExists($table);
 
-            return await($this->getQueryClient()->rawValue($sql, []));
+            return (bool) await($this->getQueryClient()->rawValue($sql, []));
         });
     }
 

@@ -22,7 +22,6 @@ describe('Column Helper Methods', function () {
             $table->string('name');
         }));
 
-
         await(schema()->create('posts', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
@@ -39,26 +38,29 @@ describe('Column Helper Methods', function () {
             $table->timestamps();
         }));
 
-        await(DB::rawExecute(
-            'INSERT INTO users (name) VALUES (?)',
-            ['Test User']
-        ));
+        await(DB::table('users')->insert([
+            'name' => 'Test User',
+        ]));
 
         $user = await(DB::rawFirst('SELECT * FROM users WHERE name = ?', ['Test User']));
 
-        expect($user['created_at'])->not->toBeNull();
-        expect($user['updated_at'])->not->toBeNull();
+        expect($user->created_at)->not->toBeNull();
+        expect($user->updated_at)->not->toBeNull();
     });
 
     it('creates softDeletes helper correctly', function () {
         await(schema()->create('users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->timestamps();
             $table->softDeletes();
         }));
 
-        $exists = await(schema()->hasTable('users'));
-        expect($exists)->toBeTruthy();
+        await(DB::table('users')->insert([
+            'name' => 'Deleted User',
+        ]));
+
+        $user = await(DB::rawFirst('SELECT * FROM users WHERE name = ?', ['Deleted User']));
+
+        expect($user->deleted_at)->toBeNull();
     });
 });

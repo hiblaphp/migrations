@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Schema\States;
 
-use Hibla\QueryBuilder\DB;
 use Hibla\Migrations\Exceptions\SchemaMigrationException;
+use Hibla\QueryBuilder\DB;
 use Rcalicdan\ConfigLoader\Config;
 
 use function Hibla\await;

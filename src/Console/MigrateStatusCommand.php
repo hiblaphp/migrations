@@ -7,8 +7,8 @@ namespace Hibla\Migrations\Console;
 use Hibla\Migrations\Console\Traits\InitializeDatabase;
 use Hibla\Migrations\Console\Traits\LoadsSchemaConfiguration;
 use Hibla\Migrations\Console\Traits\ValidateConnection;
-use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\Migrations\Schema\MigrationRepository;
+use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -308,7 +308,7 @@ class MigrateStatusCommand extends Command
             ];
         }
 
-        usort($rows, fn($a, $b) => strcmp($a[0], $b[0]));
+        usort($rows, fn ($a, $b) => strcmp($a[0], $b[0]));
 
         return $rows;
     }

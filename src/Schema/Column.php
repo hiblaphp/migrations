@@ -423,15 +423,24 @@ class Column
     /**
      * Add a unique constraint to the column.
      */
-    public function unique(bool $value = true): self
+    public function unique(bool|string $value = true): self
     {
-        $this->unique = $value;
-        if ($value) {
+        if (\is_string($value)) {
+            $this->unique = true;
             $this->columnIndexes[] = [
                 'type' => 'UNIQUE',
-                'name' => null,
+                'name' => $value,
                 'algorithm' => null,
             ];
+        } else {
+            $this->unique = $value;
+            if ($value) {
+                $this->columnIndexes[] = [
+                    'type' => 'UNIQUE',
+                    'name' => null,
+                    'algorithm' => null,
+                ];
+            }
         }
 
         return $this;

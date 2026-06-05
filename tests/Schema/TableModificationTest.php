@@ -45,16 +45,31 @@ describe('Table Creation', function () {
     });
 
     it('creates a table with auto-increment columns', function () {
-        await(schema()->create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->increments('legacy_id');
-            $table->bigIncrements('big_id');
-            $table->smallIncrements('small_id');
+        await(schema()->dropIfExists('categories_1'));
+        await(schema()->dropIfExists('categories_2'));
+        await(schema()->dropIfExists('categories_3'));
+
+        await(schema()->create('categories_1', function (Blueprint $table) {
+            $table->increments('id')->primary();
             $table->string('name');
         }));
 
-        $exists = await(schema()->hasTable('categories'));
+        await(schema()->create('categories_2', function (Blueprint $table) {
+            $table->bigIncrements('id')->primary();
+            $table->string('name');
+        }));
+
+        await(schema()->create('categories_3', function (Blueprint $table) {
+            $table->smallIncrements('id')->primary();
+            $table->string('name');
+        }));
+
+        $exists = await(schema()->hasTable('categories_1'));
         expect($exists)->toBeTruthy();
+
+        await(schema()->dropIfExists('categories_1'));
+        await(schema()->dropIfExists('categories_2'));
+        await(schema()->dropIfExists('categories_3'));
     });
 
     it('creates a table with integer variations', function () {
@@ -152,6 +167,21 @@ describe('Table Creation', function () {
             $table->string('name');
             $table->string('email')->after('name');
             $table->timestamps();
+        }));
+
+        $exists = await(schema()->hasTable('users'));
+        expect($exists)->toBeTruthy();
+    });
+
+    it('drops columns if they exist using dropIfExists', function () {
+        await(schema()->create('users', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('temp_col');
+        }));
+
+        await(schema()->table('users', function (Blueprint $table) {
+            $table->dropIfExists('temp_col');
         }));
 
         $exists = await(schema()->hasTable('users'));

@@ -78,7 +78,7 @@ describe('Indexes', function () {
         if (driver() === 'pgsql') {
             try {
                 await(DB::rawExecute('CREATE EXTENSION IF NOT EXISTS postgis'));
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $this->markTestSkipped('PostGIS extension is not installed or available on this Postgres server.');
             }
         }
@@ -100,8 +100,8 @@ describe('Indexes', function () {
     it('creates table with SRID specification', function () {
         if (driver() === 'pgsql') {
             try {
-                await(Hibla\QueryBuilder\DB::rawExecute('CREATE EXTENSION IF NOT EXISTS postgis'));
-            } catch (\Throwable $e) {
+                await(DB::rawExecute('CREATE EXTENSION IF NOT EXISTS postgis'));
+            } catch (Throwable $e) {
                 $this->markTestSkipped('PostGIS extension not available.');
             }
         }
@@ -139,6 +139,45 @@ describe('Indexes', function () {
         }));
 
         $exists = await(schema()->hasTable('posts'));
+        expect($exists)->toBeTruthy();
+    });
+
+    it('creates table with vector column and index (PostgreSQL only)', function () {
+        if (driver() !== 'pgsql') {
+            $this->markTestSkipped('Vector columns and indexes are only supported on PostgreSQL.');
+        }
+
+        try {
+            await(DB::rawExecute('CREATE EXTENSION IF NOT EXISTS vector'));
+        } catch (Throwable $e) {
+            $this->markTestSkipped('The pgvector extension is not installed or available on this PostgreSQL server.');
+        }
+
+        await(schema()->create('embeddings', function (Blueprint $table) {
+            $table->id();
+            $table->vector('embedding', 1536);
+            $table->vectorIndex('embedding', 'embeddings_vector_index', 'COSINE');
+        }));
+
+        $exists = await(schema()->hasTable('embeddings'));
+        expect($exists)->toBeTruthy();
+
+        await(schema()->dropIfExists('embeddings'));
+    });
+
+    it('creates a table with a raw index expression', function () {
+        await(schema()->create('stats', function (Blueprint $table) {
+            $table->id();
+            $table->integer('score');
+
+            $expression = driver() === 'pgsql'
+                ? 'CONSTRAINT idx_score_raw UNIQUE (score)'
+                : 'UNIQUE KEY idx_score_raw (score)';
+
+            $table->rawIndex($expression, 'idx_score_raw');
+        }));
+
+        $exists = await(schema()->hasTable('stats'));
         expect($exists)->toBeTruthy();
     });
 });

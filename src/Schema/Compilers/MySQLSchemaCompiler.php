@@ -48,7 +48,7 @@ class MySQLSchemaCompiler implements SchemaCompiler
         $columnDefinitions = [];
 
         foreach ($columns as $column) {
-            $columnDefinitions[] = '  ' . $this->compileColumn($column);
+            $columnDefinitions[] = '  ' . $this->compileColumn($column, false);
         }
 
         foreach ($indexDefinitions as $indexDef) {
@@ -65,7 +65,7 @@ class MySQLSchemaCompiler implements SchemaCompiler
         return $sql;
     }
 
-    private function compileColumn(Column $column): string
+    private function compileColumn(Column $column, bool $isAlter = false): string
     {
         $sql = "`{$column->getName()}` ";
         $sql .= $this->typeMapper->mapType($column->getType(), $column);
@@ -105,7 +105,7 @@ class MySQLSchemaCompiler implements SchemaCompiler
         }
 
         $after = $column->getAfter();
-        if ($after !== null) {
+        if ($isAlter && $after !== null) {
             $sql .= " AFTER `{$after}`";
         }
 
@@ -213,7 +213,7 @@ class MySQLSchemaCompiler implements SchemaCompiler
 
         $statements = [];
         foreach ($columns as $col) {
-            $statements[] = 'MODIFY COLUMN ' . $this->compileColumn($col);
+            $statements[] = 'MODIFY COLUMN ' . $this->compileColumn($col, true);
         }
 
         return ["ALTER TABLE `{$table}` " . implode(', ', $statements)];
@@ -232,7 +232,7 @@ class MySQLSchemaCompiler implements SchemaCompiler
 
         $statements = [];
         foreach ($columns as $col) {
-            $statements[] = 'ADD COLUMN ' . $this->compileColumn($col);
+            $statements[] = 'ADD COLUMN ' . $this->compileColumn($col, true);
         }
 
         return ["ALTER TABLE `{$table}` " . implode(', ', $statements)];
