@@ -99,7 +99,7 @@ class MigrateResetCommand extends Command
 
     private function initializeProjectRoot(): bool
     {
-        $this->projectRoot = Config::getRootPath();
+        $this->projectRoot ??= Config::getRootPath();
 
         if ($this->projectRoot === null) {
             $this->io->error('Could not find project root. Ensure a vendor directory exists.');

@@ -159,6 +159,10 @@ trait LoadsSchemaConfiguration
      * Get the migrations path for a specific connection.
      * Supports subdirectories for connection-specific organization.
      */
+    /**
+       * Get the migrations path for a specific connection.
+       * Supports subdirectories for connection-specific organization.
+       */
     private function getMigrationsPath(?string $connection = null): string
     {
         $config = $this->getSchemaConfig($connection);
@@ -167,6 +171,12 @@ trait LoadsSchemaConfiguration
         $projectRoot = isset($this->projectRoot) && \is_string($this->projectRoot)
             ? $this->projectRoot
             : '.';
+
+        $realRoot = Config::getRootPath();
+
+        if ($realRoot !== null && $projectRoot !== $realRoot) {
+            $basePath = str_replace($realRoot, $projectRoot, $basePath);
+        }
 
         if (! $this->isAbsolutePath($basePath)) {
             $basePath = $projectRoot . '/' . ltrim($basePath, '/');

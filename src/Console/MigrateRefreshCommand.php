@@ -415,7 +415,7 @@ class MigrateRefreshCommand extends Command
             $arguments['--step'] = $step;
         }
 
-        if ($forceFlag) {
+        if ($forceFlag && $commandName !== 'migrate:rollback') {
             $arguments['--force'] = true;
         }
 

@@ -17,6 +17,12 @@ class InitCommand extends Command
 
     private ?string $projectRoot = null;
 
+    /**
+     * The directory where configuration files will be copied to.
+     * Decoupled from projectRoot to allow testing in isolation.
+     */
+    private ?string $targetRoot = null;
+
     private bool $force;
 
     protected function configure(): void
@@ -44,7 +50,10 @@ class InitCommand extends Command
             return Command::FAILURE;
         }
 
-        if ($this->copyConfigFiles($this->projectRoot) === Command::FAILURE) {
+        // Default the destination target to the project root unless overridden in tests
+        $this->targetRoot ??= $this->projectRoot;
+
+        if ($this->copyConfigFiles($this->targetRoot) === Command::FAILURE) {
             return Command::FAILURE;
         }
 

@@ -37,7 +37,7 @@ class PublishTemplatesCommand extends Command
 
         $this->io->title('Publish Pagination Templates');
 
-        $this->projectRoot = Config::getRootPath();
+        $this->projectRoot ??= Config::getRootPath();
 
         if ($this->projectRoot === null) {
             $this->io->error('Could not find project root. Ensure a vendor directory exists.');
@@ -357,7 +357,9 @@ class PublishTemplatesCommand extends Command
 
     private function buildVendorPath(): string
     {
-        return $this->projectRoot . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'hiblaphp'
+        $realRoot = Config::getRootPath() ?? $this->projectRoot;
+
+        return $realRoot . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'hiblaphp'
             . DIRECTORY_SEPARATOR . 'query-builder' . DIRECTORY_SEPARATOR . 'src'
             . DIRECTORY_SEPARATOR . 'Pagination' . DIRECTORY_SEPARATOR . 'templates';
     }

@@ -37,7 +37,7 @@ class StatusCommand extends Command
         $this->io = new SymfonyStyle($input, $output);
         $this->io->title('PDO Query Builder - Status');
 
-        $this->projectRoot = Config::getRootPath();
+        $this->projectRoot ??= Config::getRootPath();
 
         if ($this->projectRoot === null) {
             $this->io->error('Could not find project root. Ensure a vendor directory exists.');

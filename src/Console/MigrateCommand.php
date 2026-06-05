@@ -60,7 +60,7 @@ class MigrateCommand extends Command
         $this->initializeIo($input, $output);
         $this->io->title('Database Migrations');
 
-        $this->projectRoot = Config::getRootPath();
+        $this->projectRoot ??= Config::getRootPath();
 
         if ($this->projectRoot === null) {
             $this->io->error('Could not find project root. Ensure a vendor directory exists.');

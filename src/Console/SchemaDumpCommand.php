@@ -42,7 +42,6 @@ class SchemaDumpCommand extends Command
     {
         $this->io = new SymfonyStyle($input, $output);
 
-        // getOption() returns mixed; narrow to string|null before assigning
         $connectionOption = $input->getOption('connection');
         $this->connection = \is_string($connectionOption) ? $connectionOption : null;
 
@@ -69,7 +68,6 @@ class SchemaDumpCommand extends Command
 
             $this->io->writeln('<info>✓</info>');
 
-            // getOption() returns mixed; cast to bool explicitly
             if ((bool) $input->getOption('prune')) {
                 $this->pruneMigrations();
             }
@@ -99,7 +97,6 @@ class SchemaDumpCommand extends Command
         $ranMigrations = await($repository->getRan());
 
         foreach ($ranMigrations as $migration) {
-            // $migration['migration'] is mixed; narrow to string before passing
             $migrationName = $migration['migration'] ?? null;
             if (! \is_string($migrationName)) {
                 continue;

@@ -52,6 +52,21 @@ class SchemaTestHelper
         DB::reset();
 
         $config = self::getDriverConfig($driver);
+
+        $_ENV['DB_CONNECTION'] = $driver;
+        $_ENV['DB_HOST'] = $config['host'];
+        $_ENV['DB_PORT'] = (string) $config['port'];
+        $_ENV['DB_DATABASE'] = $config['database'];
+        $_ENV['DB_USERNAME'] = $config['username'];
+        $_ENV['DB_PASSWORD'] = $config['password'];
+
+        $_SERVER['DB_CONNECTION'] = $driver;
+        $_SERVER['DB_HOST'] = $config['host'];
+        $_SERVER['DB_PORT'] = (string) $config['port'];
+        $_SERVER['DB_DATABASE'] = $config['database'];
+        $_SERVER['DB_USERNAME'] = $config['username'];
+        $_SERVER['DB_PASSWORD'] = $config['password'];
+
         self::$activeClient = ConnectionFactory::make($config);
 
         $driverEnum = match ($driver) {

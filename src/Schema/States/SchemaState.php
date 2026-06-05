@@ -101,6 +101,10 @@ abstract class SchemaState
         /** @var array<string, mixed> $processEnv */
         $processEnv = array_merge($_SERVER, $_ENV, $env);
 
+        // FILTER: Keep only scalar values (no arrays or objects) and cast them to strings
+        $processEnv = array_filter($processEnv, 'is_scalar');
+        $processEnv = array_map('strval', $processEnv);
+
         $process = @proc_open($command, $descriptors, $pipes, null, $processEnv);
 
         if (! \is_resource($process)) {
@@ -169,6 +173,9 @@ abstract class SchemaState
         /** @var array<string, mixed> $processEnv */
         $processEnv = array_merge($_SERVER, $_ENV, $env);
 
+        $processEnv = array_filter($processEnv, 'is_scalar');
+        $processEnv = array_map('strval', $processEnv);
+
         $process = @proc_open($command, $descriptors, $pipes, null, $processEnv);
 
         if (! \is_resource($process)) {
@@ -232,7 +239,7 @@ abstract class SchemaState
             return;
         }
 
-        // Enable multi-statements so the database executes the entire dump file at once,
+        // Enable multi-statements so the database executes the entire dump file at once for mysql driver,
         // Note this option is ignored by other driver that dont have strict check for multiline statements
         $config['multi_statements'] = true;
 

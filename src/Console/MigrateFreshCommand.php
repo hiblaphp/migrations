@@ -73,7 +73,7 @@ class MigrateFreshCommand extends Command
             return Command::SUCCESS;
         }
 
-        $this->projectRoot = Config::getRootPath();
+        $this->projectRoot ??= Config::getRootPath();
 
         if ($this->projectRoot === null) {
             $this->io->error('Could not find project root. Ensure a vendor directory exists.');
@@ -309,8 +309,8 @@ class MigrateFreshCommand extends Command
     }
 
     /**
-     * @return list<string>
-     */
+       * @return list<string>
+      */
     private function getMigratedTables(): array
     {
         $tables = [];
@@ -327,7 +327,7 @@ class MigrateFreshCommand extends Command
 
             case 'pgsql':
             case 'pgsql_native':
-                $sql = "SELECT tablename FROM pg_tables WHERE schemaname = 'public'";
+                $sql = "SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename != 'spatial_ref_sys'";
                 $results = await(DB::connection($this->connection)->raw($sql));
                 foreach ($results as $row) {
                     $tables[] = ((array) $row)['tablename'];
