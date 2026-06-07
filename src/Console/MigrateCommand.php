@@ -376,7 +376,6 @@ class MigrateCommand extends Command
             }
 
             $default = $dbConfig['default'] ?? null;
-            // Narrow $connectionName to string so it is a valid array key
             $connectionName = $connection ?? (\is_string($default) ? $default : 'mysql');
 
             $connections = $dbConfig['connections'] ?? [];
