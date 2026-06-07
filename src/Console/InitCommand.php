@@ -31,16 +31,19 @@ class InitCommand extends Command
 
     private string $customMigrationsPath = '';
 
+    private string $customSeedersPath = '';
+
     protected function configure(): void
     {
         $this
             ->setName('init')
             ->setDescription('Initialize Hibla Database configuration')
-            ->setHelp('Copies the default configuration files to your project.')
+            ->setHelp('Copies the default configuration files (Database, Migrations, Seeders) to your project.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing configuration')
             ->addOption('dir', 'd', InputOption::VALUE_OPTIONAL, 'Target directory relative to project root (e.g., "config")', '')
             ->addOption('db-config', null, InputOption::VALUE_OPTIONAL, 'Name for the database config file (without .php)', 'hibla-database')
             ->addOption('migrations-config', null, InputOption::VALUE_OPTIONAL, 'Name for the migrations config file (without .php)', 'hibla-migrations')
+            ->addOption('seeders-config', null, InputOption::VALUE_OPTIONAL, 'Name for the seeders config file (without .php)', 'hibla-seeders')
         ;
     }
 
@@ -76,30 +79,41 @@ class InitCommand extends Command
 
         $dbConfigOption = $input->getOption('db-config');
         $migrationsConfigOption = $input->getOption('migrations-config');
+        $seedersConfigOption = $input->getOption('seeders-config');
 
         $dbFileName = (\is_string($dbConfigOption) ? $dbConfigOption : 'hibla-database') . '.php';
         $migrationsFileName = (\is_string($migrationsConfigOption) ? $migrationsConfigOption : 'hibla-migrations') . '.php';
+        $seedersFileName = (\is_string($seedersConfigOption) ? $seedersConfigOption : 'hibla-seeders') . '.php';
 
-        $this->isCustomConfig = $dirOption !== '' || $dbFileName !== 'hibla-database.php' || $migrationsFileName !== 'hibla-migrations.php';
+        $this->isCustomConfig = $dirOption !== ''
+            || $dbFileName !== 'hibla-database.php'
+            || $migrationsFileName !== 'hibla-migrations.php'
+            || $seedersFileName !== 'hibla-seeders.php';
 
         $prefix = $dirOption !== '' ? $dirOption . '/' : '';
         $this->customDbPath = $prefix . str_replace('.php', '', $dbFileName);
         $this->customMigrationsPath = $prefix . str_replace('.php', '', $migrationsFileName);
+        $this->customSeedersPath = $prefix . str_replace('.php', '', $seedersFileName);
 
-        if ($this->copyConfigFiles($targetDir, $dbFileName, $migrationsFileName) === Command::FAILURE) {
+        if ($this->copyConfigFiles($targetDir, $dbFileName, $migrationsFileName, $seedersFileName) === Command::FAILURE) {
             return Command::FAILURE;
         }
 
-        $this->promptEnvFileCreation($dirOption);
+        $this->promptEnvFileCreation($dirOption, $dbFileName, $migrationsFileName, $seedersFileName);
 
         return Command::SUCCESS;
     }
 
-    private function copyConfigFiles(string $targetDir, string $dbFileName, string $migrationsFileName): int
-    {
+    private function copyConfigFiles(
+        string $targetDir,
+        string $dbFileName,
+        string $migrationsFileName,
+        string $seedersFileName
+    ): int {
         $files = [
             $dbFileName => $this->getSourceConfigPath('hibla-database.php'),
             $migrationsFileName => $this->getSourceConfigPath('hibla-migrations.php'),
+            $seedersFileName => $this->getSourceConfigPath('hibla-seeders.php'),
         ];
 
         $copiedFiles = [];
@@ -152,8 +166,12 @@ class InitCommand extends Command
         return 'copied';
     }
 
-    private function promptEnvFileCreation(string $dirOption): void
-    {
+    private function promptEnvFileCreation(
+        string $dirOption,
+        string $dbFileName,
+        string $migrationsFileName,
+        string $seedersFileName
+    ): void {
         $envLines = [
             'DB_CONNECTION=mysql',
             'DB_HOST=127.0.0.1',
@@ -164,16 +182,18 @@ class InitCommand extends Command
         ];
 
         $isCustomDir = $dirOption !== '' && $dirOption !== 'config';
-        $isCustomDbName = $this->customDbPath !== 'hibla-database';
-        $isCustomMigrationsName = $this->customMigrationsPath !== 'hibla-migrations';
+        $isCustomDbName = $dbFileName !== 'hibla-database.php';
+        $isCustomMigrationsName = $migrationsFileName !== 'hibla-migrations.php';
+        $isCustomSeedersName = $seedersFileName !== 'hibla-seeders.php';
 
-        $requiresEnvMapping = $isCustomDir || $isCustomDbName || $isCustomMigrationsName;
+        $requiresEnvMapping = $isCustomDir || $isCustomDbName || $isCustomMigrationsName || $isCustomSeedersName;
 
         if ($requiresEnvMapping) {
             $envLines[] = '';
             $envLines[] = '# Hibla Custom Configuration Paths';
             $envLines[] = "HIBLA_DB_CONFIG={$this->customDbPath}";
             $envLines[] = "HIBLA_MIGRATIONS_CONFIG={$this->customMigrationsPath}";
+            $envLines[] = "HIBLA_SEEDERS_CONFIG={$this->customSeedersPath}";
         }
 
         if ($this->projectRoot !== null && ! file_exists($this->projectRoot . '/.env')) {
@@ -184,6 +204,7 @@ class InitCommand extends Command
             $this->io->listing([
                 "HIBLA_DB_CONFIG={$this->customDbPath}",
                 "HIBLA_MIGRATIONS_CONFIG={$this->customMigrationsPath}",
+                "HIBLA_SEEDERS_CONFIG={$this->customSeedersPath}",
             ]);
         }
 

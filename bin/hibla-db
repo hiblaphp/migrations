@@ -1,12 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
+use Hibla\Migrations\Console\DbSeedCommand;
 use Symfony\Component\Console\Application;
 use Hibla\Migrations\Console\InitCommand;
 use Hibla\Migrations\Console\PublishTemplatesCommand;
 use Hibla\Migrations\Console\MakeMigrationCommand;
+use Hibla\Migrations\Console\MakeSeederCommand;
 use Hibla\Migrations\Console\MigrateCommand;
 use Hibla\Migrations\Console\MigrateRollbackCommand;
 use Hibla\Migrations\Console\MigrateResetCommand;
@@ -21,6 +23,8 @@ $application = new Application('Hibla Database', '1.0.0');
 $application->addCommand(new InitCommand());
 $application->addCommand(new PublishTemplatesCommand());
 $application->addCommand(new MakeMigrationCommand());
+$application->addCommand(new MakeSeederCommand());
+$application->addCommand(new DbSeedCommand());
 $application->addCommand(new MigrateCommand());
 $application->addCommand(new MigrateRollbackCommand());
 $application->addCommand(new MigrateResetCommand());

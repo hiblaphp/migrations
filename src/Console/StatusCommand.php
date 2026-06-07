@@ -68,11 +68,13 @@ class StatusCommand extends Command
 
         $dbConfig = ConfigResolver::getDatabaseConfig();
         $migrationsConfig = ConfigResolver::getMigrationsConfig();
+        $seedersConfig = ConfigResolver::getSeedersConfig();
 
         $rows = [
             ['Project Root', $this->projectRoot],
             ['Database Config', $dbConfig !== null ? '✓ Resolved' : '✗ Missing'],
             ['Migrations Config', $migrationsConfig !== null ? '✓ Resolved' : '✗ Missing'],
+            ['Seeders Config', $seedersConfig !== null ? '✓ Resolved' : '✗ Missing'],
         ];
 
         $envFile = $this->projectRoot . DIRECTORY_SEPARATOR . '.env';
@@ -85,6 +87,7 @@ class StatusCommand extends Command
     private function allConfigurationsResolved(): bool
     {
         return ConfigResolver::getDatabaseConfig() !== null &&
-               ConfigResolver::getMigrationsConfig() !== null;
+               ConfigResolver::getMigrationsConfig() !== null &&
+               ConfigResolver::getSeedersConfig() !== null;
     }
 }

@@ -1,8 +1,14 @@
 {
-    "name": "hiblaphp/migrations",
-    "description": "Cli and Migration Tooling for Hibla Database Ecosystem",
+    "name": "hiblaphp/schema-manager",
+    "description": "Schema, Migration, and Seeding Management for the Hibla Database Ecosystem",
     "type": "library",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Reymart A. Calicdan",
+            "email": "reymart.calicdan06@gmail.com"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Hibla\\Migrations\\": "src/"
@@ -28,12 +34,6 @@
         "bin/hibla-db"
     ],
     "scripts": {
-        "post-install-cmd": [
-            "@php -r \"if (!is_dir('config')) { echo '\\nRun: ./vendor/bin/hibla-db init\\n\\n'; }\""
-        ],
-        "post-update-cmd": [
-            "@php -r \"if (!is_dir('config')) { echo '\\nRun: ./vendor/bin/hibla-db init\\n\\n'; }\""
-        ],
         "test": "./vendor/bin/pest",
         "format": "./vendor/bin/pint",
         "format-test": "./vendor/bin/pint --test",

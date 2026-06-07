@@ -28,6 +28,7 @@ describe('StatusCommand', function () {
         ConfigResolver::$mocks = [
             'database' => [],
             'migrations' => [],
+            'seeders' => [],
         ];
 
         $application = new Application();
@@ -54,6 +55,7 @@ describe('StatusCommand', function () {
         ConfigResolver::$mocks = [
             'database' => null,
             'migrations' => null,
+            'seeders' => null,
         ];
 
         $application = new Application();
