@@ -8,7 +8,7 @@ use Hibla\Migrations\Console\Traits\LoadsSchemaConfiguration;
 use Hibla\Migrations\Console\Traits\ValidateConnection;
 use Hibla\Migrations\Schema\MigrationRepository;
 use Hibla\Migrations\Schema\States\SchemaState;
-use Rcalicdan\ConfigLoader\Config;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -116,7 +116,7 @@ class SchemaDumpCommand extends Command
      */
     private function getDatabaseConfig(?string $connection): array
     {
-        $config = Config::loadFromRoot('hibla-database');
+        $config = ConfigResolver::getDatabaseConfig();
 
         if (! \is_array($config)) {
             return [];

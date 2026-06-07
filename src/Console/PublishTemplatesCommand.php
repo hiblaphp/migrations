@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Console;
 
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -89,7 +90,7 @@ class PublishTemplatesCommand extends Command
     private function getConfiguredPath(): ?string
     {
         try {
-            $dbConfig = Config::loadFromRoot('hibla-database');
+            $dbConfig = ConfigResolver::getDatabaseConfig();
 
             if (! \is_array($dbConfig)) {
                 return null;

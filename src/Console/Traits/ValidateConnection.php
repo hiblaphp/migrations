@@ -6,7 +6,7 @@ namespace Hibla\Migrations\Console\Traits;
 
 use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\QueryBuilder\Exceptions\InvalidConnectionConfigException;
-use Rcalicdan\ConfigLoader\Config;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 
 trait ValidateConnection
 {
@@ -48,7 +48,7 @@ trait ValidateConnection
     private function getAvailableConnections(): array
     {
         try {
-            $dbConfig = Config::loadFromRoot('hibla-database');
+            $dbConfig = ConfigResolver::getDatabaseConfig();
 
             if (! \is_array($dbConfig)) {
                 return [];

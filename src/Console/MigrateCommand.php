@@ -14,6 +14,7 @@ use Hibla\Migrations\Schema\States\SchemaState;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -333,7 +334,7 @@ class MigrateCommand extends Command
     private function getDatabaseName(): string
     {
         try {
-            $dbConfig = Config::loadFromRoot('hibla-database');
+            $dbConfig = ConfigResolver::getDatabaseConfig();
 
             if (! \is_array($dbConfig)) {
                 return 'unknown';
@@ -368,7 +369,7 @@ class MigrateCommand extends Command
     private function getDatabaseConfig(?string $connection = null): array
     {
         try {
-            $dbConfig = Config::loadFromRoot('hibla-database');
+            $dbConfig = ConfigResolver::getDatabaseConfig();
 
             if (! \is_array($dbConfig)) {
                 return [];

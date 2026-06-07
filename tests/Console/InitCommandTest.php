@@ -32,8 +32,9 @@ describe('InitCommand', function () {
         expect($exitCode)->toBe(0);
 
         $output = $tester->getDisplay();
-        expect($output)->toContain('Configuration created in project root: hibla-database.php')
-            ->and($output)->toContain('Configuration created in project root: hibla-migrations.php')
+
+        expect($output)->toContain("Configuration created: {$tempDir}/hibla-database.php")
+            ->and($output)->toContain("Configuration created: {$tempDir}/hibla-migrations.php")
         ;
 
         expect(file_exists($tempDir . '/hibla-database.php'))->toBeTrue()

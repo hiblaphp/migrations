@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Schema;
 
-use Rcalicdan\ConfigLoader\Config;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 
 class Blueprint
 {
@@ -589,7 +589,7 @@ class Blueprint
     public function timestamps(?string $timezone = null): void
     {
         if ($timezone === null) {
-            $config = Config::loadFromRoot('hibla-migrations');
+            $config = ConfigResolver::getMigrationsConfig();
             $timezone = (\is_array($config) && isset($config['timezone']) && \is_string($config['timezone']))
                 ? $config['timezone']
                 : 'UTC';

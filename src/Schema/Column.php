@@ -7,7 +7,7 @@ namespace Hibla\Migrations\Schema;
 use Carbon\Carbon;
 use Doctrine\Inflector\Inflector as DoctrineInflector;
 use Doctrine\Inflector\InflectorFactory;
-use Rcalicdan\ConfigLoader\Config;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 
 /**
  * @phpstan-type TColumnIndex array{type: 'UNIQUE'|'INDEX'|'FULLTEXT'|'SPATIAL'|'VECTOR', name: string|null, algorithm: string|null, operatorClass?: string|null}
@@ -103,7 +103,7 @@ class Column
         $this->scale = $scale;
 
         if (\in_array($type, ['TIMESTAMP', 'DATETIME', 'DATE'], true)) {
-            $config = Config::loadFromRoot('hibla-migrations');
+            $config = ConfigResolver::getMigrationsConfig();
             $this->timezone = (\is_array($config) && isset($config['timezone']) && \is_string($config['timezone']))
                 ? $config['timezone']
                 : 'UTC';

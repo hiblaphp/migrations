@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Console;
 
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -16,26 +17,18 @@ class StatusCommand extends Command
 
     private ?string $projectRoot = null;
 
-    /**
-     * @var array<string, string>
-     */
-    private array $configFiles = [
-        'hibla-database.php' => 'Config File',
-        'hibla-migrations.php' => 'Schema File',
-    ];
-
     protected function configure(): void
     {
         $this
             ->setName('status')
-            ->setDescription('Check PDO Query Builder configuration status')
+            ->setDescription('Check Hibla Database configuration status')
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->io = new SymfonyStyle($input, $output);
-        $this->io->title('PDO Query Builder - Status');
+        $this->io->title('Hibla Database - Status');
 
         $this->projectRoot ??= Config::getRootPath();
 
@@ -47,8 +40,8 @@ class StatusCommand extends Command
 
         $this->displayStatusTable();
 
-        if (! $this->allRequiredFilesExist()) {
-            $this->io->note('Run: ./vendor/bin/hibla-query-builder init');
+        if (! $this->allConfigurationsResolved()) {
+            $this->io->note('Run: ./vendor/bin/hibla-db init');
 
             return Command::FAILURE;
         }
@@ -73,41 +66,25 @@ class StatusCommand extends Command
             throw new \LogicException('Project root must be initialized before building status rows.');
         }
 
+        $dbConfig = ConfigResolver::getDatabaseConfig();
+        $migrationsConfig = ConfigResolver::getMigrationsConfig();
+
         $rows = [
             ['Project Root', $this->projectRoot],
+            ['Database Config', $dbConfig !== null ? '✓ Resolved' : '✗ Missing'],
+            ['Migrations Config', $migrationsConfig !== null ? '✓ Resolved' : '✗ Missing'],
         ];
 
-        foreach ($this->configFiles as $filename => $label) {
-            $filePath = $this->getConfigFilePath($filename);
-            $status = file_exists($filePath) ? '✓ Found' : '✗ Missing';
-            $rows[] = [$label, $status];
-        }
-
-        $envFile = $this->projectRoot . '/.env';
+        $envFile = $this->projectRoot . DIRECTORY_SEPARATOR . '.env';
         $envStatus = file_exists($envFile) ? '✓ Found' : '✗ Missing';
         $rows[] = ['.env File', $envStatus];
 
         return $rows;
     }
 
-    private function allRequiredFilesExist(): bool
+    private function allConfigurationsResolved(): bool
     {
-        foreach ($this->configFiles as $filename => $label) {
-            $filePath = $this->getConfigFilePath($filename);
-            if (! file_exists($filePath)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private function getConfigFilePath(string $filename): string
-    {
-        if ($this->projectRoot === null) {
-            throw new \LogicException('Project root must be initialized before getting config file path.');
-        }
-
-        return $this->projectRoot . '/' . $filename;
+        return ConfigResolver::getDatabaseConfig() !== null &&
+               ConfigResolver::getMigrationsConfig() !== null;
     }
 }

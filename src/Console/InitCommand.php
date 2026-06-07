@@ -25,13 +25,22 @@ class InitCommand extends Command
 
     private bool $force;
 
+    private bool $isCustomConfig = false;
+
+    private string $customDbPath = '';
+
+    private string $customMigrationsPath = '';
+
     protected function configure(): void
     {
         $this
             ->setName('init')
             ->setDescription('Initialize Hibla Database configuration')
-            ->setHelp('Copies the default configuration files directly to your project\'s root directory.')
+            ->setHelp('Copies the default configuration files to your project.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing configuration')
+            ->addOption('dir', 'd', InputOption::VALUE_OPTIONAL, 'Target directory relative to project root (e.g., "config")', '')
+            ->addOption('db-config', null, InputOption::VALUE_OPTIONAL, 'Name for the database config file (without .php)', 'hibla-database')
+            ->addOption('migrations-config', null, InputOption::VALUE_OPTIONAL, 'Name for the migrations config file (without .php)', 'hibla-migrations')
         ;
     }
 
@@ -53,20 +62,44 @@ class InitCommand extends Command
         // Default the destination target to the project root unless overridden in tests
         $this->targetRoot ??= $this->projectRoot;
 
-        if ($this->copyConfigFiles($this->targetRoot) === Command::FAILURE) {
+        // Parse custom directory option
+        $dirOption = $input->getOption('dir');
+        $dirOption = \is_string($dirOption) ? trim($dirOption, '/\\') : '';
+
+        $targetDir = $dirOption === ''
+            ? $this->targetRoot
+            : $this->targetRoot . DIRECTORY_SEPARATOR . $dirOption;
+
+        if (! is_dir($targetDir)) {
+            mkdir($targetDir, 0755, true);
+        }
+
+        $dbConfigOption = $input->getOption('db-config');
+        $migrationsConfigOption = $input->getOption('migrations-config');
+
+        $dbFileName = (\is_string($dbConfigOption) ? $dbConfigOption : 'hibla-database') . '.php';
+        $migrationsFileName = (\is_string($migrationsConfigOption) ? $migrationsConfigOption : 'hibla-migrations') . '.php';
+
+        $this->isCustomConfig = $dirOption !== '' || $dbFileName !== 'hibla-database.php' || $migrationsFileName !== 'hibla-migrations.php';
+
+        $prefix = $dirOption !== '' ? $dirOption . '/' : '';
+        $this->customDbPath = $prefix . str_replace('.php', '', $dbFileName);
+        $this->customMigrationsPath = $prefix . str_replace('.php', '', $migrationsFileName);
+
+        if ($this->copyConfigFiles($targetDir, $dbFileName, $migrationsFileName) === Command::FAILURE) {
             return Command::FAILURE;
         }
 
-        $this->promptEnvFileCreation();
+        $this->promptEnvFileCreation($dirOption);
 
         return Command::SUCCESS;
     }
 
-    private function copyConfigFiles(string $targetDir): int
+    private function copyConfigFiles(string $targetDir, string $dbFileName, string $migrationsFileName): int
     {
         $files = [
-            'hibla-database.php' => $this->getSourceConfigPath('hibla-database.php'),
-            'hibla-migrations.php' => $this->getSourceConfigPath('hibla-migrations.php'),
+            $dbFileName => $this->getSourceConfigPath('hibla-database.php'),
+            $migrationsFileName => $this->getSourceConfigPath('hibla-migrations.php'),
         ];
 
         $copiedFiles = [];
@@ -86,7 +119,7 @@ class InitCommand extends Command
         }
 
         foreach ($copiedFiles as $filename) {
-            $this->io->success("✓ Configuration created in project root: {$filename}");
+            $this->io->success("✓ Configuration created: {$targetDir}/{$filename}");
         }
 
         return \count($failedFiles) === 0 ? Command::SUCCESS : Command::FAILURE;
@@ -100,10 +133,10 @@ class InitCommand extends Command
             return 'failed';
         }
 
-        $destConfig = $targetDir . '/' . $filename;
+        $destConfig = $targetDir . DIRECTORY_SEPARATOR . $filename;
 
         if (file_exists($destConfig) && ! $this->force) {
-            if (! $this->io->confirm("File '{$filename}' already exists in your root folder. Overwrite?", false)) {
+            if (! $this->io->confirm("File '{$filename}' already exists in the target folder. Overwrite?", false)) {
                 $this->io->warning("Skipped: {$filename}");
 
                 return 'skipped';
@@ -111,7 +144,7 @@ class InitCommand extends Command
         }
 
         if (! copy($sourceConfig, $destConfig)) {
-            $this->io->error("Failed to copy {$filename} to root");
+            $this->io->error("Failed to copy {$filename} to target directory");
 
             return 'failed';
         }
@@ -119,18 +152,43 @@ class InitCommand extends Command
         return 'copied';
     }
 
-    private function promptEnvFileCreation(): void
+    private function promptEnvFileCreation(string $dirOption): void
     {
+        $envLines = [
+            'DB_CONNECTION=mysql',
+            'DB_HOST=127.0.0.1',
+            'DB_PORT=3306',
+            'DB_DATABASE=test',
+            'DB_USERNAME=root',
+            'DB_PASSWORD=',
+        ];
+
+        $isCustomDir = $dirOption !== '' && $dirOption !== 'config';
+        $isCustomDbName = $this->customDbPath !== 'hibla-database';
+        $isCustomMigrationsName = $this->customMigrationsPath !== 'hibla-migrations';
+
+        $requiresEnvMapping = $isCustomDir || $isCustomDbName || $isCustomMigrationsName;
+
+        if ($requiresEnvMapping) {
+            $envLines[] = '';
+            $envLines[] = '# Hibla Custom Configuration Paths';
+            $envLines[] = "HIBLA_DB_CONFIG={$this->customDbPath}";
+            $envLines[] = "HIBLA_MIGRATIONS_CONFIG={$this->customMigrationsPath}";
+        }
+
         if ($this->projectRoot !== null && ! file_exists($this->projectRoot . '/.env')) {
             $this->io->section('Create .env file in project root with:');
+            $this->io->listing($envLines);
+        } elseif ($requiresEnvMapping) {
+            $this->io->section('Important! Add these to your existing .env file:');
             $this->io->listing([
-                'DB_CONNECTION=mysql',
-                'DB_HOST=127.0.0.1',
-                'DB_PORT=3306',
-                'DB_DATABASE=test',
-                'DB_USERNAME=root',
-                'DB_PASSWORD=',
+                "HIBLA_DB_CONFIG={$this->customDbPath}",
+                "HIBLA_MIGRATIONS_CONFIG={$this->customMigrationsPath}",
             ]);
+        }
+
+        if ($this->isCustomConfig && ! $requiresEnvMapping) {
+            $this->io->note("Since you placed the default files in the 'config' directory, they will be auto-discovered. No .env variables required!");
         }
     }
 

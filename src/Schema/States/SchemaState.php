@@ -6,7 +6,7 @@ namespace Hibla\Migrations\Schema\States;
 
 use Hibla\Migrations\Exceptions\SchemaMigrationException;
 use Hibla\QueryBuilder\DB;
-use Rcalicdan\ConfigLoader\Config;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 
 use function Hibla\await;
 
@@ -36,7 +36,7 @@ abstract class SchemaState
      */
     public static function make(?string $connectionName = null): self
     {
-        $rawConfig = Config::loadFromRoot('hibla-database');
+        $rawConfig = ConfigResolver::getDatabaseConfig();
 
         /** @var array<string, mixed> $dbConfig */
         $dbConfig = \is_array($rawConfig) ? $rawConfig : [];

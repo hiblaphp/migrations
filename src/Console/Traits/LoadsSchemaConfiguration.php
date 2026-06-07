@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Console\Traits;
 
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 
 trait LoadsSchemaConfiguration
@@ -50,7 +51,7 @@ trait LoadsSchemaConfiguration
     private function loadConfigSafely(?string $connection): array
     {
         try {
-            $config = Config::loadFromRoot('hibla-migrations');
+            $config = ConfigResolver::getMigrationsConfig();
 
             if (! \is_array($config)) {
                 return [];
@@ -159,10 +160,6 @@ trait LoadsSchemaConfiguration
      * Get the migrations path for a specific connection.
      * Supports subdirectories for connection-specific organization.
      */
-    /**
-       * Get the migrations path for a specific connection.
-       * Supports subdirectories for connection-specific organization.
-       */
     private function getMigrationsPath(?string $connection = null): string
     {
         $config = $this->getSchemaConfig($connection);

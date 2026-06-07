@@ -10,7 +10,7 @@ use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\QueryBuilder\Exceptions\InvalidConnectionConfigException;
 use Hibla\QueryBuilder\Internals\DatabaseConnection;
-use Rcalicdan\ConfigLoader\Config;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 
 use function Hibla\async;
 use function Hibla\await;
@@ -40,7 +40,7 @@ class DatabaseManager
 
     public function __construct(?string $connection = null)
     {
-        $dbConfig = Config::loadFromRoot('hibla-database');
+        $dbConfig = ConfigResolver::getDatabaseConfig();
 
         if (! \is_array($dbConfig)) {
             throw new DatabaseConfigurationException('Invalid database configuration format');

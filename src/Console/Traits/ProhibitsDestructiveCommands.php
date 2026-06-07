@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Hibla\Migrations\Console\Traits;
 
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -17,7 +18,8 @@ trait ProhibitsDestructiveCommands
     private function isDestructiveCommandProhibited(SymfonyStyle $io): bool
     {
         try {
-            $isSafeMode = Config::loadFromRoot('hibla-migrations', 'safe_mode', false);
+            $config = ConfigResolver::getMigrationsConfig();
+            $isSafeMode = $config['safe_mode'] ?? false;
 
             if ($isSafeMode === true) {
                 $io->newLine();
