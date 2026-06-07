@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Hibla\SchemaManager\Console;
 
+use Hibla\QueryBuilder\DB;
+use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
+use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Hibla\SchemaManager\Console\Traits\InitializeDatabase;
 use Hibla\SchemaManager\Console\Traits\LoadsSchemaConfiguration;
 use Hibla\SchemaManager\Console\Traits\ValidateConnection;
@@ -11,10 +15,6 @@ use Hibla\SchemaManager\Schema\DatabaseManager;
 use Hibla\SchemaManager\Schema\Migration;
 use Hibla\SchemaManager\Schema\MigrationRepository;
 use Hibla\SchemaManager\Schema\States\SchemaState;
-use Hibla\QueryBuilder\DB;
-use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
-use Hibla\QueryBuilder\Interfaces\TransactionalQueryBuilderInterface;
-use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Console;
 
+use Hibla\QueryBuilder\DB;
 use Hibla\SchemaManager\Console\MigrateCommand;
 use Hibla\SchemaManager\Schema\Blueprint;
-use Hibla\QueryBuilder\DB;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Hibla\SchemaManager\Schema\SchemaBuilder;
 use Hibla\QueryBuilder\DB;
+use Hibla\SchemaManager\Schema\SchemaBuilder;
 use Tests\Helpers\SchemaTestHelper;
 
 use function Hibla\await;

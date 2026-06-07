@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hibla\SchemaManager\Console;
 
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Hibla\SchemaManager\Console\Traits\LoadsSeederConfiguration;
 use Hibla\SchemaManager\Schema\Seeder;
-use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Rcalicdan\ConfigLoader\Config;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;

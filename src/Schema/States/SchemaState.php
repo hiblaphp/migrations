@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hibla\SchemaManager\Schema\States;
 
-use Hibla\SchemaManager\Exceptions\SchemaMigrationException;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Utilities\ConfigResolver;
+use Hibla\SchemaManager\Exceptions\SchemaMigrationException;
 
 use function Hibla\await;
 

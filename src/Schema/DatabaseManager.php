@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Hibla\SchemaManager\Schema;
 
-use Hibla\SchemaManager\Exceptions\SchemaMigrationException;
 use Hibla\Promise\Interfaces\PromiseInterface;
 use Hibla\QueryBuilder\DB;
 use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\QueryBuilder\Exceptions\InvalidConnectionConfigException;
 use Hibla\QueryBuilder\Internals\DatabaseConnection;
 use Hibla\QueryBuilder\Utilities\ConfigResolver;
+use Hibla\SchemaManager\Exceptions\SchemaMigrationException;
 
 use function Hibla\async;
 use function Hibla\await;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Console;
 
-use Hibla\SchemaManager\Console\StatusCommand;
 use Hibla\QueryBuilder\Utilities\ConfigResolver;
+use Hibla\SchemaManager\Console\StatusCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 

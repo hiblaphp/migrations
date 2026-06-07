@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Hibla\SchemaManager\Schema\Blueprint;
 use Hibla\QueryBuilder\DB;
+use Hibla\SchemaManager\Schema\Blueprint;
 
 use function Hibla\await;
 

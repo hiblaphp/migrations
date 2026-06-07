@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Hibla\SchemaManager\Console;
 
+use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Hibla\SchemaManager\Console\Traits\LoadsSchemaConfiguration;
 use Hibla\SchemaManager\Console\Traits\ValidateConnection;
 use Hibla\SchemaManager\Schema\MigrationRepository;
 use Hibla\SchemaManager\Schema\States\SchemaState;
-use Hibla\QueryBuilder\Utilities\ConfigResolver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

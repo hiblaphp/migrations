@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Hibla\SchemaManager\Console;
 
+use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Hibla\SchemaManager\Console\Traits\ProhibitsDestructiveCommands;
 use Hibla\SchemaManager\Console\Traits\ValidateConnection;
-use Hibla\QueryBuilder\Exceptions\DatabaseConfigurationException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
