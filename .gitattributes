@@ -8,4 +8,4 @@
 /docker-compose.yml export-ignore
 /init-mysql.sql     export-ignore
 /init-postgres.sql  export-ignore
-/hibla-database.php export-ignore
+
