@@ -11,6 +11,9 @@
 
 ## Installation
 
+>This package is currently in **beta**. Before installing, ensure your `composer.json`
+allows beta releases:
+
 Install the package via Composer. *(This automatically installs the required `hiblaphp/query-builder` dependency).*
 
 ```bash
