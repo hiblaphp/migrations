@@ -1,7 +1,28 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+$possibleAutoloadPaths = [
+    __DIR__ . '/../vendor/autoload.php',      
+    __DIR__ . '/../../../autoload.php',    
+    __DIR__ . '/../../../../autoload.php',     
+];
+
+$autoloadFile = null;
+foreach ($possibleAutoloadPaths as $path) {
+    if (file_exists($path)) {
+        $autoloadFile = $path;
+        break;
+    }
+}
+
+if ($autoloadFile === null) {
+    fwrite(STDERR, "Error: Could not find composer's autoload.php.\n");
+    fwrite(STDERR, "Please run 'composer install' or 'composer update' first.\n");
+    exit(1);
+}
+
+require_once $autoloadFile;
+
 
 use Hibla\SchemaManager\Console\DbSeedCommand;
 use Symfony\Component\Console\Application;
