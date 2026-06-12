@@ -19,7 +19,7 @@
     "require": {
         "php": "^8.4",
         "hiblaphp/query-builder": "^1.0",
-        "symfony/console": "^7.3",
+        "symfony/console": "^7.0|^8.0",
         "doctrine/inflector": "^2.1",
         "nesbot/carbon": "^3.10"
     },
